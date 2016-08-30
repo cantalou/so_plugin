@@ -4,6 +4,7 @@ import com.cantalou.android.util.FileUtil;
 import com.cantalou.android.util.Log;
 
 import java.io.File;
+import java.util.HashSet;
 
 /**
  * @author cantalou
@@ -18,13 +19,15 @@ public class Downloader implements Runnable {
         /**
          * 下载成功
          */
-        public void onSuccess();
+        public void onSuccess(DownloadItem item);
 
         /**
          * 下载失败
          */
-        public void onError(Throwable t);
+        public void onError(DownloadItem item, Throwable t);
     }
+
+    private static HashSet<String> downloadingUrl = new HashSet<String>();
 
     private DownloadItem mDownloadItem;
 
@@ -49,39 +52,41 @@ public class Downloader implements Runnable {
 
     @Override
     public void run() {
-        File dest = mDownloadItem.getDest();
+        File dest = mDownloadItem.dest;
         if (dest.exists()) {
-            mDownloadItem.setReady(true);
+            mDownloadItem.setDownloaded(true);
+            mListener.onSuccess(mDownloadItem);
             return;
         }
 
+        String url = mDownloadItem.url;
         temp = new File(dest.getAbsolutePath() + ".tmp");
         if (temp.exists()) {
-            Log.w("File {} is downloading", mDownloadItem.getUrl());
-            return;
+            if (downloadingUrl.contains(url)) {
+                Log.i("File {} is downloading", url);
+                return;
+            } else {
+                Log.i("Delete tmp file :{}", temp);
+                temp.delete();
+            }
         }
 
+        downloadingUrl.add(url);
         HttpUrlFetcher fetcher = new HttpUrlFetcher(mDownloadItem);
         try {
             FileUtil.copyContent(fetcher.loadData(), temp);
             temp.renameTo(dest);
+            mDownloadItem.setDownloaded(true);
+            mListener.onSuccess(mDownloadItem);
         } catch (Exception e) {
-            mListener.onError(e);
+            mListener.onError(mDownloadItem, e);
             Log.e(e);
         } finally {
             temp.delete();
-
+            downloadingUrl.remove(url);
             if (fetcher != null) {
                 fetcher.cleanup();
             }
-        }
-        mDownloadItem.setReady(true);
-        mListener.onSuccess();
-    }
-
-    public void clear() {
-        if (temp != null) {
-            temp.delete();
         }
     }
 }

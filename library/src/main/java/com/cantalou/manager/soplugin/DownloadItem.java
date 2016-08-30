@@ -14,21 +14,26 @@ public class DownloadItem {
 
     private File dest;
 
-    private boolean ready;
+    private boolean downloaded;
+
+    private boolean loaded;
+
+    private RequestBuilder builder;
 
     private Map<String, String> headers = Collections.emptyMap();
 
-    public DownloadItem(String url, File dest) {
+    public DownloadItem(String url, File dest, RequestBuilder builder) {
         this.url = url;
         this.dest = dest;
+        this.builder = builder;
     }
 
-    public boolean isReady() {
-        return ready;
+    public boolean isDownloaded() {
+        return downloaded;
     }
 
-    public void setReady(boolean ready) {
-        this.ready = ready;
+    public void setDownloaded(boolean downloaded) {
+        this.downloaded = downloaded;
     }
 
     public String getUrl() {
@@ -42,4 +47,34 @@ public class DownloadItem {
     public Map<String, String> getHeaders() {
         return headers;
     }
+
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
+    }
+
+    public RequestBuilder getBuilder() {
+        return builder;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setDest(File dest) {
+        this.dest = dest;
+    }
+
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    public void setBuilder(RequestBuilder builder) {
+        this.builder = builder;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+
 }
