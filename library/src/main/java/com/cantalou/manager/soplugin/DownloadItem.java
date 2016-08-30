@@ -1,4 +1,4 @@
-package com.cantalou.util.ijkplayer;
+package com.cantalou.util.soplugin;
 
 import java.io.File;
 

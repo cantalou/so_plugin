@@ -1,4 +1,4 @@
-package com.cantalou.util.ijkplayer;
+package com.cantalou.util.soplugin;
 
 import android.content.Context;
 import android.os.Build;
@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 public class SoPlugin implements Downloader.DownloadListener
 {
     public static final String[] IJKPLAYER_SO_FILE = new String[]{
-            "ijkffmpeg", "ijksdl", "ijkplayer"
+            "ijkffmpeg", "ijksdl", "soplugin"
     };
 
     private static class Holder

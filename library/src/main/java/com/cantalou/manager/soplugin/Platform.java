@@ -1,4 +1,4 @@
-package com.cantalou.util.ijkplayer;
+package com.cantalou.util.soplugin;
 
 /**
  * @author cantalou

@@ -1,4 +1,4 @@
-package com.cantalou.util.ijkplayer;
+package com.cantalou.util.soplugin;
 
 import tv.danmaku.ijk.media.player.IjkLibLoader;
 

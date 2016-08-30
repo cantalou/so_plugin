@@ -1,4 +1,4 @@
-package com.cantalou.util.ijkplayer;
+package com.cantalou.util.soplugin;
 
 import com.cantalou.android.util.FileUtil;
 import com.cantalou.android.util.Log;
