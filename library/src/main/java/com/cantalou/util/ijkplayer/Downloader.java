@@ -21,23 +21,15 @@ public class Downloader implements Runnable
         /**
          * 下载成功
          */
-        public void onSuccess(String url);
+        public void onSuccess(DownloadItem item);
 
         /**
          * 下载失败
          */
-        public void onError(String url);
+        public void onError(DownloadItem item, Throwable t);
     }
 
-    /**
-     * 下载地址
-     */
-    private String mUrl;
-
-    /**
-     * 文件保存地址
-     */
-    private String mDest;
+    private DownloadItem mDownloadItem;
 
     /**
      * 下载监听
@@ -45,44 +37,42 @@ public class Downloader implements Runnable
     private DownloadListener mListener;
 
     /**
-     * @param url      下载地址
-     * @param dest     文件保存地址
+     * @param downloadItem   下载信息
      * @param listener 下载监听
      */
-    public Downloader(String url, String dest, DownloadListener listener)
+    public Downloader(DownloadItem downloadItem, DownloadListener listener)
     {
-        mUrl = url;
-        mDest = dest;
+        mDownloadItem = downloadItem;
         mListener = listener;
     }
 
     @Override
     public void run()
     {
-        File destFile = new File(mDest);
-        if (destFile.exists())
+        File dest = mDownloadItem.getDest();
+        if (dest.exists())
         {
-            mListener.onSuccess(mUrl);
+            mDownloadItem.setReady(true);
             return;
         }
 
-        File temp = new File(mDest + ".tmp");
+        File temp = new File(dest.getAbsolutePath() + ".tmp");
         if (temp.exists())
         {
-            Log.w("File {} is downloading", mUrl);
+            Log.w("File {} is downloading", mDownloadItem.getUrl());
             return;
         }
 
         HttpURLConnection conn = null;
         try
         {
-            conn = (HttpURLConnection) new URL(mUrl).openConnection();
+            conn = (HttpURLConnection) new URL(mDownloadItem.getUrl()).openConnection();
             FileUtil.copyContent(conn.getInputStream(), temp);
-            temp.renameTo(new File(mDest));
+            temp.renameTo(dest);
         }
         catch (Exception e)
         {
-            mListener.onError(mUrl);
+            mListener.onError(mDownloadItem, e);
             Log.e(e);
         }
         finally
@@ -94,6 +84,7 @@ public class Downloader implements Runnable
                 conn.disconnect();
             }
         }
-        mListener.onSuccess(mUrl);
+        mDownloadItem.setReady(true);
+        mListener.onSuccess(mDownloadItem);
     }
 }
