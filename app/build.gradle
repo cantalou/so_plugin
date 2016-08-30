@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.1"
 
     defaultConfig {
-        applicationId "com.cantalou.util.ijkplayer"
+        applicationId "com.cantalou.util.soplugin"
         minSdkVersion 10
         targetSdkVersion 21
         versionCode 1
