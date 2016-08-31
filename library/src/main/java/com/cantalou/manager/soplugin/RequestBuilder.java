@@ -11,31 +11,34 @@ import java.util.List;
  */
 public class RequestBuilder {
 
-    private Context context;
+    protected Context context;
 
-    private boolean soFileReady = false;
+    protected boolean soFileReady = false;
 
-    private List<DownloadItem> downloadItems = Collections.emptyList();
+    protected List<DownloadItem> downloadItems = Collections.emptyList();
 
     /**
      * 默认以支持的平台类型
      */
-    private Platform defaultPlatform;
+    protected Platform defaultPlatform;
 
     /**
      * so文件根目录, 该目录下要包含 x86,armeabi等平台目录
      */
-    private String libDirUrl;
+    protected String libDirUrl;
 
     /**
      * 要下载的so文件名称, 不包含前缀"lib"和后缀".so"
      */
-    private String[] soFiles;
+    protected String[] soFiles;
 
-    public RequestBuilder(Context context, String libDirUrl, String[] soFiles) {
+    protected RequestListener requestListener;
+
+    public RequestBuilder(Context context, String libDirUrl, String[] soFiles, RequestListener requestListener) {
         this.context = context.getApplicationContext();
         this.libDirUrl = libDirUrl;
         this.soFiles = soFiles;
+        this.requestListener = requestListener;
     }
 
     public Context getContext() {
@@ -84,5 +87,13 @@ public class RequestBuilder {
 
     public void setSoFiles(String[] soFiles) {
         this.soFiles = soFiles;
+    }
+
+    public RequestListener getRequestListener() {
+        return requestListener;
+    }
+
+    public void setRequestListener(RequestListener requestListener) {
+        this.requestListener = requestListener;
     }
 }

@@ -1,6 +1,5 @@
 package com.cantalou.manager.soplugin;
 
-import android.content.Intent;
 import android.os.Build;
 
 import com.cantalou.android.util.Log;
@@ -16,11 +15,7 @@ import java.util.concurrent.Executors;
  * @author cantalou
  * @date 2016年08月29日 13:58
  */
-public class SoPluginManager implements Downloader.DownloadListener {
-
-    public static final String[] IJKPLAYER_SO_FILE = new String[]{
-            "ijkffmpeg", "ijksdl", "soplugin"
-    };
+public class SoPluginManager implements RequestListener {
 
     private static class Holder {
         static final SoPluginManager INSTANCE = new SoPluginManager();
@@ -29,13 +24,6 @@ public class SoPluginManager implements Downloader.DownloadListener {
     public static SoPluginManager getInstance() {
         return Holder.INSTANCE;
     }
-
-    /**
-     * 默认so文件的下载地址
-     */
-    public static final String DEFAULT_LIB_DIR_URL = "https://github.com/cantalou/so_plugin/tree/master/libs";
-
-    public static final String ON_SO_FILE_READY_ACTION = "com.cantalou.ON_SO_FILE_READY_ACTION";
 
     /**
      * 第一选择的cpu类型
@@ -96,6 +84,8 @@ public class SoPluginManager implements Downloader.DownloadListener {
             return;
         }
 
+        builder.getRequestListener().preLoad();
+
         String[] soFiles = builder.getSoFiles();
         List<DownloadItem> items = builder.getDownloadItems();
         if (items.isEmpty()) {
@@ -128,22 +118,34 @@ public class SoPluginManager implements Downloader.DownloadListener {
     }
 
     @Override
-    public void onError(DownloadItem item, Throwable t) {
+    public boolean onError(DownloadItem item, Throwable t) {
+        return item.getBuilder().getRequestListener().onError(item, t);
     }
 
     @Override
-    public void onSuccess(DownloadItem item) {
-        try {
-            System.load(item.getDest().getAbsolutePath());
-            item.setLoaded(true);
+    public void afterLoaded() {
+    }
 
-            RequestBuilder rb = item.getBuilder();
-            if (isReady(rb)) {
-                rb.getContext().sendBroadcast(new Intent(ON_SO_FILE_READY_ACTION));
+    @Override
+    public void preLoad() {
+    }
+
+    @Override
+    public boolean onSuccess(DownloadItem item) {
+        RequestBuilder rb = item.getBuilder();
+        RequestListener listener = rb.getRequestListener();
+        if (!listener.onSuccess(item)) {
+            try {
+                System.load(item.getDest().getAbsolutePath());
+                item.setLoaded(true);
+                if (isReady(rb)) {
+                    listener.afterLoaded();
+                }
+            } catch (Throwable e) {
+                item.getDest().delete();
+                Log.w("Loading lib error", e);
             }
-        } catch (Throwable e) {
-            item.getDest().delete();
-            Log.w("Loading lib error", e);
         }
+        return true;
     }
 }
