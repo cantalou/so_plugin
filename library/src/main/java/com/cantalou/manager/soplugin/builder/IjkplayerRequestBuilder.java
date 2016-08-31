@@ -19,7 +19,7 @@ public class IjkplayerRequestBuilder extends RequestBuilder {
     /**
      * 默认so文件的下载地址
      */
-    public static final String DEFAULT_LIB_DIR_URL = "https://github.com/cantalou/so_plugin/tree/master/ijkplayer/libs";
+    public static final String DEFAULT_LIB_DIR_URL = "https://github.com/cantalou/so_plugin/tree/master/libs/ijkplayer";
 
     private static final ArrayList<String> ijkplayerSoFiles = new ArrayList<String>();
 
