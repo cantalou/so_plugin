@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author LinZhiWei
+ * @author cantalou
  * @date 2016年08月30日 16:14
  */
 public class Request {

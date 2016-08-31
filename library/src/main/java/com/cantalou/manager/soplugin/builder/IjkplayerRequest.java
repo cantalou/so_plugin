@@ -11,7 +11,7 @@ import tv.danmaku.ijk.media.player.IjkLibLoader;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 /**
- * @author LinZhiWei
+ * @author cantalou
  * @date 2016年08月30日 17:03
  */
 public class IjkplayerRequest extends Request {

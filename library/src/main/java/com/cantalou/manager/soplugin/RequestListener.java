@@ -1,7 +1,7 @@
 package com.cantalou.manager.soplugin;
 
 /**
- * @author LinZhiWei
+ * @author cantalou
  * @date 2016年08月30日 17:07
  */
 public interface RequestListener {
