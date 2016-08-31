@@ -56,7 +56,7 @@ public class SoPluginManager implements RequestListener {
      * @param builder
      * @return
      */
-    public boolean isReady(RequestBuilder builder) {
+    public boolean isReady(Request builder) {
 
         if (builder.isSoFileReady()) {
             return true;
@@ -70,7 +70,7 @@ public class SoPluginManager implements RequestListener {
         return true;
     }
 
-    public void download(RequestBuilder builder) {
+    public void download(Request builder) {
 
         for (String abi : supportedAbis) {
             if (builder.getDefaultPlatform().name.equals(abi)) {
@@ -132,7 +132,7 @@ public class SoPluginManager implements RequestListener {
 
     @Override
     public boolean onSuccess(DownloadItem item) {
-        RequestBuilder rb = item.getBuilder();
+        Request rb = item.getBuilder();
         RequestListener listener = rb.getRequestListener();
         if (!listener.onSuccess(item)) {
             try {

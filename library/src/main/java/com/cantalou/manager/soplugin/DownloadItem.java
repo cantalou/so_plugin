@@ -18,11 +18,11 @@ public class DownloadItem {
 
     private boolean loaded;
 
-    private RequestBuilder builder;
+    private Request builder;
 
     private Map<String, String> headers = Collections.emptyMap();
 
-    public DownloadItem(String url, File dest, RequestBuilder builder) {
+    public DownloadItem(String url, File dest, Request builder) {
         this.url = url;
         this.dest = dest;
         this.builder = builder;
@@ -52,7 +52,7 @@ public class DownloadItem {
         this.loaded = loaded;
     }
 
-    public RequestBuilder getBuilder() {
+    public Request getBuilder() {
         return builder;
     }
 
@@ -68,7 +68,7 @@ public class DownloadItem {
         return loaded;
     }
 
-    public void setBuilder(RequestBuilder builder) {
+    public void setBuilder(Request builder) {
         this.builder = builder;
     }
 

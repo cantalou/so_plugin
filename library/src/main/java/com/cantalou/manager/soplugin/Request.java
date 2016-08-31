@@ -9,7 +9,7 @@ import java.util.List;
  * @author LinZhiWei
  * @date 2016年08月30日 16:14
  */
-public class RequestBuilder {
+public class Request {
 
     protected Context context;
 
@@ -34,7 +34,7 @@ public class RequestBuilder {
 
     protected RequestListener requestListener;
 
-    public RequestBuilder(Context context, String libDirUrl, String[] soFiles, RequestListener requestListener) {
+    public Request(Context context, String libDirUrl, String[] soFiles, RequestListener requestListener) {
         this.context = context.getApplicationContext();
         this.libDirUrl = libDirUrl;
         this.soFiles = soFiles;

@@ -2,7 +2,7 @@ package com.cantalou.manager.soplugin.builder;
 
 import android.content.Context;
 
-import com.cantalou.manager.soplugin.RequestBuilder;
+import com.cantalou.manager.soplugin.Request;
 import com.cantalou.manager.soplugin.RequestListener;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
  * @author LinZhiWei
  * @date 2016年08月30日 17:03
  */
-public class IjkplayerRequestBuilder extends RequestBuilder {
+public class IjkplayerRequest extends Request {
 
     /**
      * 默认so文件的下载地址
@@ -33,7 +33,7 @@ public class IjkplayerRequestBuilder extends RequestBuilder {
         );
     }
 
-    public IjkplayerRequestBuilder(Context context, RequestListener listener) {
+    public IjkplayerRequest(Context context, RequestListener listener) {
         super(context, DEFAULT_LIB_DIR_URL, ijkplayerSoFiles.toArray(new String[ijkplayerSoFiles.size()]), listener);
     }
 
