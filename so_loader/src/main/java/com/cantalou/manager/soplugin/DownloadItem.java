@@ -14,10 +14,6 @@ public class DownloadItem {
 
     private File dest;
 
-    private boolean downloaded;
-
-    private boolean loaded;
-
     private Request builder;
 
     private Map<String, String> headers = Collections.emptyMap();
@@ -26,14 +22,6 @@ public class DownloadItem {
         this.url = url;
         this.dest = dest;
         this.builder = builder;
-    }
-
-    public boolean isDownloaded() {
-        return downloaded;
-    }
-
-    public void setDownloaded(boolean downloaded) {
-        this.downloaded = downloaded;
     }
 
     public String getUrl() {
@@ -48,10 +36,6 @@ public class DownloadItem {
         return headers;
     }
 
-    public void setLoaded(boolean loaded) {
-        this.loaded = loaded;
-    }
-
     public Request getBuilder() {
         return builder;
     }
@@ -62,10 +46,6 @@ public class DownloadItem {
 
     public void setDest(File dest) {
         this.dest = dest;
-    }
-
-    public boolean isLoaded() {
-        return loaded;
     }
 
     public void setBuilder(Request builder) {
