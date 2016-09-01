@@ -3,7 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jcvideoplayer_adapter/jcvideoplayer_adapter.iml" filepath="$PROJECT_DIR$/jcvideoplayer_adapter/jcvideoplayer_adapter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/so_loader/so_loader.iml" filepath="$PROJECT_DIR$/so_loader/so_loader.iml" />
       <module fileurl="file://$PROJECT_DIR$/so_plugin.iml" filepath="$PROJECT_DIR$/so_plugin.iml" />
     </modules>
   </component>
