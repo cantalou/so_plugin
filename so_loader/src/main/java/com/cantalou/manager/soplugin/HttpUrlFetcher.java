@@ -25,13 +25,12 @@ public class HttpUrlFetcher {
     private static final int MAX_RETRY = 3;
     private static final HttpUrlConnectionFactory DEFAULT_CONNECTION_FACTORY = new DefaultHttpUrlConnectionFactory();
 
-    private final HttpUrlConnectionFactory connectionFactory;
+    private HttpUrlConnectionFactory connectionFactory;
 
     private HttpURLConnection urlConnection;
     private InputStream stream;
     private volatile boolean isCancelled;
     private DownloadItem item;
-
 
     public HttpUrlFetcher(DownloadItem item) {
         this(item, DEFAULT_CONNECTION_FACTORY);
@@ -69,6 +68,10 @@ public class HttpUrlFetcher {
                 // Do nothing, this is best effort.
             }
         }
+        return loadData(url, redirects, lastUrl, headers);
+    }
+
+    private InputStream loadData(URL url, int redirects, URL lastUrl, Map<String, String> headers) throws IOException {
         urlConnection = connectionFactory.build(url);
         for (Map.Entry<String, String> headerEntry : headers.entrySet()) {
             urlConnection.addRequestProperty(headerEntry.getKey(), headerEntry.getValue());

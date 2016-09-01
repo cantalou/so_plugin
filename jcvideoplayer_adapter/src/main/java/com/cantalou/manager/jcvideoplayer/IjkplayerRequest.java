@@ -1,4 +1,4 @@
-package com.cantalou.manager.soplugin.builder;
+package com.cantalou.manager.jcvideoplayer;
 
 import android.content.Context;
 
@@ -19,7 +19,7 @@ public class IjkplayerRequest extends Request {
     /**
      * 默认so文件的下载地址
      */
-    public static final String DEFAULT_LIB_DIR_URL = "https://github.com/cantalou/so_plugin/tree/master/libs/ijkplayer";
+    public static final String DEFAULT_LIB_DIR_URL = "http://127.0.0.1:8080/libs/ijkplayer";
 
     private static final ArrayList<String> ijkplayerSoFiles = new ArrayList<String>();
 
