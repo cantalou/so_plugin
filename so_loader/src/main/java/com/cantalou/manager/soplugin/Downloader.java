@@ -41,16 +41,18 @@ public class Downloader implements Runnable {
     public void run() {
         File dest = mDownloadItem.getDest();
         if (dest.exists()) {
-            mDownloadItem.setDownloaded(true);
             mListener.onSuccess(mDownloadItem);
+            Log.i("File :{} was downloaded", dest);
             return;
         }
-
         String url = mDownloadItem.getUrl();
+
+        Log.d("Start download file , url:{}", url);
+
         mTemp = new File(dest.getAbsolutePath() + ".tmp");
         if (mTemp.exists()) {
             if (mDownloadingUrl.contains(url)) {
-                Log.i("File {} is downloading", url);
+                Log.i("File {} is downloading return", url);
                 return;
             } else {
                 Log.i("Delete tmp file :{}", mTemp);
@@ -63,8 +65,8 @@ public class Downloader implements Runnable {
         try {
             FileUtil.copyContent(fetcher.loadData(), mTemp);
             mTemp.renameTo(dest);
-            mDownloadItem.setDownloaded(true);
             mListener.onSuccess(mDownloadItem);
+            Log.d("File url:{} download success, size:{}", url, dest.length());
         } catch (Exception e) {
             mListener.onError(mDownloadItem, e);
             Log.e(e);
