@@ -6,7 +6,7 @@ package com.cantalou.manager.soplugin;
  */
 public enum Platform {
 
-    X86("x86"), ARMEABI("armeabi"), ARMEABI_V7A("armeabi-v7a");
+    NULL(""), X86("x86"), ARMEABI("armeabi"), ARMEABI_V7A("armeabi-v7a");
 
     String name;
 
