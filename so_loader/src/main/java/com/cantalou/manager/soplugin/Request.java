@@ -13,14 +13,12 @@ public class Request {
 
     protected Context context;
 
-    protected boolean soFileReady = false;
-
     protected List<DownloadItem> downloadItems = Collections.emptyList();
 
     /**
      * 默认以支持的平台类型
      */
-    protected Platform defaultPlatform;
+    protected Platform defaultPlatform = Platform.NULL;
 
     /**
      * so文件根目录, 该目录下要包含 x86,armeabi等平台目录
@@ -47,14 +45,6 @@ public class Request {
 
     public void setContext(Context context) {
         this.context = context;
-    }
-
-    public boolean isSoFileReady() {
-        return soFileReady;
-    }
-
-    public void setSoFileReady(boolean soFileReady) {
-        this.soFileReady = soFileReady;
     }
 
     public List<DownloadItem> getDownloadItems() {
