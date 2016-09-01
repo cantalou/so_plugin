@@ -1,12 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 24
     buildToolsVersion "24.0.1"
 
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 21
+        minSdkVersion 14
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
     }
     buildTypes {
         release {
@@ -18,7 +20,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.cantalou:android-util:1.0.2'
     provided 'tv.danmaku.ijk.media:ijkplayer-java:0.6.0'
-
+    provided 'fm.jiecao:jiecaovideoplayer:4.6.3'
+    compile project(':so_loader')
 }
