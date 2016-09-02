@@ -1,4 +1,4 @@
-package com.cantalou.manager.soplugin;
+package com.cantalou.manager.soloader;
 
 import android.content.Context;
 

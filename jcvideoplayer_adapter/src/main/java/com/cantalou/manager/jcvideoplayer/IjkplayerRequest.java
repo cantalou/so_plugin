@@ -2,8 +2,8 @@ package com.cantalou.manager.jcvideoplayer;
 
 import android.content.Context;
 
-import com.cantalou.manager.soplugin.Request;
-import com.cantalou.manager.soplugin.RequestListener;
+import com.cantalou.manager.soloader.Request;
+import com.cantalou.manager.soloader.RequestListener;
 
 import java.util.ArrayList;
 

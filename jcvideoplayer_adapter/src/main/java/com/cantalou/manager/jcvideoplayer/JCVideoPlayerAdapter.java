@@ -8,15 +8,15 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.cantalou.manager.soplugin.DownloadItem;
-import com.cantalou.manager.soplugin.RequestListener;
-import com.cantalou.manager.soplugin.SoPluginManager;
+import com.cantalou.manager.soloader.DownloadItem;
+import com.cantalou.manager.soloader.RequestListener;
+import com.cantalou.manager.soloader.SoLoaderManager;
 
 import fm.jiecao.jcvideoplayer_lib.JCMediaManager;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
 /**
- * @author LinZhiWei
+ * @author cantalou
  * @date 2016年08月31日 14:30
  */
 public class JCVideoPlayerAdapter extends JCVideoPlayerStandard implements RequestListener {
@@ -78,7 +78,7 @@ public class JCVideoPlayerAdapter extends JCVideoPlayerStandard implements Reque
 
     @Override
     public void prepareVideo() {
-        SoPluginManager.getInstance().download(request);
+        SoLoaderManager.getInstance().download(request);
         tv.setVisibility(View.VISIBLE);
     }
 

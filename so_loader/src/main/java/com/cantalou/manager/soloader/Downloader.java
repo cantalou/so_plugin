@@ -1,10 +1,13 @@
-package com.cantalou.manager.soplugin;
+package com.cantalou.manager.soloader;
 
 import com.cantalou.android.util.FileUtil;
 import com.cantalou.android.util.Log;
 
 import java.io.File;
 import java.util.HashSet;
+
+import static com.cantalou.android.util.ReflectUtil.forName;
+import static com.cantalou.android.util.ReflectUtil.invoke;
 
 /**
  * @author cantalou
@@ -64,6 +67,7 @@ public class Downloader implements Runnable {
         HttpUrlFetcher fetcher = new HttpUrlFetcher(mDownloadItem);
         try {
             FileUtil.copyContent(fetcher.loadData(), mTemp);
+            invoke(forName("android.system.Os"), "chmod", new Class<?>[]{}, mTemp.getAbsolutePath(), 00755);
             mTemp.renameTo(dest);
             mListener.onSuccess(mDownloadItem);
             Log.d("File url:{} download success, size:{}", url, dest.length());

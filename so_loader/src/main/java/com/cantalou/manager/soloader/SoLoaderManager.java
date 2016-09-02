@@ -1,4 +1,4 @@
-package com.cantalou.manager.soplugin;
+package com.cantalou.manager.soloader;
 
 import android.os.Build;
 
@@ -16,13 +16,13 @@ import java.util.concurrent.Executors;
  * @author cantalou
  * @date 2016年08月29日 13:58
  */
-public class SoPluginManager implements RequestListener {
+public class SoLoaderManager implements RequestListener {
 
     private static class Holder {
-        static final SoPluginManager INSTANCE = new SoPluginManager();
+        static final SoLoaderManager INSTANCE = new SoLoaderManager();
     }
 
-    public static SoPluginManager getInstance() {
+    public static SoLoaderManager getInstance() {
         return Holder.INSTANCE;
     }
 
@@ -41,7 +41,7 @@ public class SoPluginManager implements RequestListener {
      */
     private ConcurrentHashMap<String, Object> loadedSo = new ConcurrentHashMap<String, Object>();
 
-    private SoPluginManager() {
+    private SoLoaderManager() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             supportedAbis = Build.SUPPORTED_ABIS;

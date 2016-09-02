@@ -1,4 +1,4 @@
-package com.cantalou.manager.soplugin;
+package com.cantalou.manager.soloader;
 
 import java.io.File;
 import java.util.Collections;
