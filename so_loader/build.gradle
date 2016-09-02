@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
+    }
+}
+
 apply plugin: 'com.android.library'
 
 android {
@@ -21,3 +30,5 @@ dependencies {
     compile 'com.cantalou:android-util:1.0.2'
     provided 'tv.danmaku.ijk.media:ijkplayer-java:0.6.0'
 }
+
+apply from : 'bintray.gradle'
