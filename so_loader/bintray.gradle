@@ -1,37 +1,38 @@
-project.archivesBaseName = PROJ_ARTIFACTID
-
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
-bintray {
-    user = hasProperty("BINTRAY_USER") ? getProperty("BINTRAY_USER") : getProperty("BINTRAY_USER")
-    key = hasProperty("BINTRAY_USER") ? getProperty("BINTRAY_USER") : getProperty("BINTRAY_KEY")
-    configurations = ['archives']
-    publications = ['MyPublication']
-    publish = true //[Default: false] Whether version should be auto published after an upload    
-    pkg {
-        repo = 'maven'
-        userOrg = user
-        name = PROJ_NAME
-        desc = PROJ_DESCRIPTION
-        websiteUrl = PROJ_WEBSITEURL
-        issueTrackerUrl = PROJ_ISSUETRACKERURL
-        vcsUrl = PROJ_VCSURL
-        licenses = ['Apache-2.0']
-        publicDownloadNumbers = true
-
-        version {
-            name = PROJ_VERSION
-            released = new Date()
-            vcsTag = PROJ_VERSION
-        }
-    }
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
 }
 
-task sourceJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier "source"
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += configurations.compile
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    android.libraryVariants.all { variant ->
+        variant.javaCompile.classpath.files.each {
+            classpath += project.files(it)
+        }
+    }
+    failOnError false
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+javadoc {
+    options {
+        encoding "UTF-8"
+        charSet 'UTF-8'
+        author true
+        version true
+        links "http://docs.oracle.com/javase/7/docs/api"
+        title PROJ_ARTIFACTID
+    }
 }
 
 def pomConfig = {
@@ -53,10 +54,13 @@ def pomConfig = {
 publishing {
     publications {
         MyPublication(MavenPublication) {
+
             groupId PROJ_GROUP
             artifactId PROJ_ARTIFACTID
             version PROJ_VERSION
-            artifact sourceJar
+
+            artifact sourcesJar
+            artifact javadocJar
             artifact "${project.buildDir}/outputs/aar/${project.name}-release.aar"
 
             pom.withXml {
@@ -84,4 +88,26 @@ publishing {
     }
 }
 
+bintray {
+    user = BINTRAY_USER
+    key = BINTRAY_KEY
 
+    publications = ['MyPublication']
+    publish = true //[Default: false] Whether version should be auto published after an upload
+    pkg {
+        repo = 'maven'
+        userOrg = user
+        name = PROJ_NAME
+        desc = PROJ_DESCRIPTION
+        websiteUrl = PROJ_WEBSITEURL
+        issueTrackerUrl = PROJ_ISSUETRACKERURL
+        vcsUrl = PROJ_VCSURL
+        licenses = ['Apache-2.0']
+        publicDownloadNumbers = true
+
+        version {
+            name = PROJ_VERSION
+            vcsTag = PROJ_VERSION
+        }
+    }
+}
