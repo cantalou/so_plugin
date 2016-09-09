@@ -20,7 +20,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    provided 'tv.danmaku.ijk.media:ijkplayer-java:0.6.0'
     provided 'fm.jiecao:jiecaovideoplayer:4.6.3'
     compile project(':so_loader')
 }

@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.Map;
 
 /**
- * A DataFetcher that retrieves an {@link java.io.InputStream} for a Url.
+ * A DataFetcher that retrieves an {@link InputStream} for a Url.
  *
  * @author cantalou
  * @date 2016年08月30日 11:45

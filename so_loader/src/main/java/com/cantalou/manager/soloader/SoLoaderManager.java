@@ -7,6 +7,7 @@ import com.cantalou.android.util.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -16,13 +17,16 @@ import java.util.concurrent.Executors;
  * @author cantalou
  * @date 2016年08月29日 13:58
  */
-public class SoLoaderManager implements RequestListener {
+public class SoLoaderManager implements RequestListener
+{
 
-    private static class Holder {
+    private static class Holder
+    {
         static final SoLoaderManager INSTANCE = new SoLoaderManager();
     }
 
-    public static SoLoaderManager getInstance() {
+    public static SoLoaderManager getInstance()
+    {
         return Holder.INSTANCE;
     }
 
@@ -41,18 +45,30 @@ public class SoLoaderManager implements RequestListener {
      */
     private ConcurrentHashMap<String, Object> loadedSo = new ConcurrentHashMap<String, Object>();
 
-    private SoLoaderManager() {
+    private ArrayList<RequestListener> requestListeners = new ArrayList<RequestListener>();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    private ExecutorService es = Executors.newCachedThreadPool();
+
+    private SoLoaderManager()
+    {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
             supportedAbis = Build.SUPPORTED_ABIS;
-            if (supportedAbis != null && supportedAbis.length > 0) {
-                firstAbi = supportedAbis[0];
-            }
         }
 
-        if (supportedAbis == null || supportedAbis.length == 0) {
+        if (supportedAbis == null || supportedAbis.length == 0)
+        {
             supportedAbis = new String[]{Build.CPU_ABI, Build.CPU_ABI2};
-            firstAbi = StringUtils.isNotBlank(Build.CPU_ABI) ? Build.CPU_ABI : Build.CPU_ABI2;
+        }
+        for (String abi : supportedAbis)
+        {
+            if (abi.contains("64"))
+            {
+                continue;
+            }
+            firstAbi = abi;
+            break;
         }
     }
 
@@ -62,15 +78,21 @@ public class SoLoaderManager implements RequestListener {
      * @param builder
      * @return
      */
-    public boolean isAllLoaded(Request builder) {
+    public boolean isAllLoaded(Request builder)
+    {
 
         List<DownloadItem> items = builder.getDownloadItems();
-        if (items.isEmpty()) {
-            return true;
+        if (items.isEmpty())
+        {
+            items = createDownloadItem(builder);
+            builder.setDownloadItems(items);
         }
 
-        for (DownloadItem item : items) {
-            if (!loadedSo.contains(item.getDest().getAbsolutePath())) {
+        for (DownloadItem item : items)
+        {
+            if (!loadedSo.contains(item.getDest()
+                                       .getAbsolutePath()))
+            {
                 return false;
             }
         }
@@ -83,28 +105,37 @@ public class SoLoaderManager implements RequestListener {
      * @param builder
      * @return
      */
-    public boolean isAllDownloaded(Request builder) {
-        for (DownloadItem item : builder.getDownloadItems()) {
-            if (!item.getDest().exists()) {
+    public boolean isAllDownloaded(Request builder)
+    {
+        for (DownloadItem item : builder.getDownloadItems())
+        {
+            if (!item.getDest()
+                     .exists())
+            {
                 return false;
             }
         }
         return true;
     }
 
-    public void download(Request builder) {
+    public void download(Request builder)
+    {
 
         RequestListener listener = builder.getRequestListener();
 
-        for (String abi : supportedAbis) {
-            if (abi.equals(builder.getDefaultPlatform().name)) {
+        Platform def = builder.getDefaultPlatform();
+        for (String abi : supportedAbis)
+        {
+            if (abi.equals(def.name))
+            {
                 Log.i("So file had bind into apk");
                 listener.afterLoaded();
                 return;
             }
         }
 
-        if (StringUtils.isBlank(firstAbi)) {
+        if (StringUtils.isBlank(firstAbi))
+        {
             Log.w("Not support cpu abi");
             return;
         }
@@ -112,96 +143,122 @@ public class SoLoaderManager implements RequestListener {
         listener.preLoad();
 
         List<DownloadItem> items = builder.getDownloadItems();
-        if (items.isEmpty()) {
+        if (items.isEmpty())
+        {
             items = createDownloadItem(builder);
             builder.setDownloadItems(items);
         }
 
-        if (isAllLoaded(builder)) {
+        if (isAllLoaded(builder))
+        {
             listener.afterLoaded();
             return;
         }
 
-        ExecutorService es = Executors.newFixedThreadPool(items.size());
-        for (DownloadItem item : items) {
+        for (DownloadItem item : items)
+        {
             es.execute(new Downloader(item, this));
         }
     }
 
-    private List<DownloadItem> createDownloadItem(Request builder) {
+    private List<DownloadItem> createDownloadItem(Request builder)
+    {
 
         String[] soFiles = builder.getSoFiles();
+        if (soFiles == null || soFiles.length == 0)
+        {
+            return Collections.emptyList();
+        }
         ArrayList<DownloadItem> items = new ArrayList<DownloadItem>(soFiles.length);
         StringBuilder sb = new StringBuilder();
-        File destDir = new File(builder.getContext().getFilesDir() + "/libs");
+        File destDir = new File(builder.getContext()
+                                       .getFilesDir() + "/libs/" + firstAbi);
         destDir.mkdirs();
-        for (int i = 0; i < builder.getSoFiles().length; i++) {
+        for (int i = 0; i < builder.getSoFiles().length; i++)
+        {
 
             sb.setLength(0);
             String fileName = sb.append("lib")
-                    .append(soFiles[i])
-                    .append(".so")
-                    .toString();
+                                .append(soFiles[i])
+                                .append(".so")
+                                .toString();
 
             File dest = new File(destDir, fileName);
-            if (loadedSo.contains(dest.getAbsoluteFile())) {
+            if (loadedSo.contains(dest.getAbsoluteFile()))
+            {
                 continue;
             }
 
             sb.setLength(0);
             String url = sb.append(builder.getLibDirUrl())
-                    .append('/')
-                    .append(firstAbi)
-                    .append('/')
-                    .append(fileName)
-                    .toString();
+                           .append('/')
+                           .append(firstAbi)
+                           .append('/')
+                           .append(fileName)
+                           .toString();
             items.add(new DownloadItem(url, dest, builder));
         }
         return items;
     }
 
     @Override
-    public boolean onError(DownloadItem item, Throwable t) {
-        RequestListener listener = item.getBuilder().getRequestListener();
-        if (listener != null) {
+    public boolean onError(DownloadItem item, Throwable t)
+    {
+        RequestListener listener = item.getBuilder()
+                                       .getRequestListener();
+        if (listener != null)
+        {
             return listener.onError(item, t);
         }
         return false;
     }
 
     @Override
-    public void afterLoaded() {
+    public void afterLoaded()
+    {
     }
 
     @Override
-    public void preLoad() {
+    public void preLoad()
+    {
     }
 
     @Override
-    public boolean onSuccess(DownloadItem item) {
+    public boolean onSuccess(DownloadItem item)
+    {
         Request rb = item.getBuilder();
         RequestListener listener = rb.getRequestListener();
-        if (listener != null && listener.onSuccess(item)) {
+        if (listener != null && listener.onSuccess(item))
+        {
             return true;
         }
-        synchronized (this) {
-            if (!isAllDownloaded(rb)) {
+        synchronized (this)
+        {
+            if (!isAllDownloaded(rb))
+            {
                 return false;
             }
 
-            try {
-                for (DownloadItem di : rb.getDownloadItems()) {
-                    String path = di.getDest().getAbsolutePath();
-                    if (loadedSo.contains(path)) {
+            try
+            {
+                for (DownloadItem di : rb.getDownloadItems())
+                {
+                    String path = di.getDest()
+                                    .getAbsolutePath();
+                    if (loadedSo.contains(path))
+                    {
                         continue;
                     }
                     System.load(path);
                     loadedSo.put(path, path);
                 }
-                if (listener != null) {
+                if (listener != null)
+                {
                     listener.afterLoaded();
                 }
-            } catch (Throwable e) {
+            }
+            catch (Throwable e)
+            {
                 //item.getDest().delete();
                 Log.w(e, "Loading lib error");
             }

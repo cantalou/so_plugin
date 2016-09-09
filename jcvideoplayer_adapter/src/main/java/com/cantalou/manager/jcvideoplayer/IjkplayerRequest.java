@@ -14,27 +14,37 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
  * @author cantalou
  * @date 2016年08月30日 17:03
  */
-public class IjkplayerRequest extends Request {
-
+public class IjkplayerRequest extends Request
+{
     /**
      * 默认so文件的下载地址
      */
-    public static final String DEFAULT_LIB_DIR_URL = "http://127.0.0.1:8080/libs/ijkplayer";
+    public static final String DEFAULT_LIB_DIR_URL = "http://qzapp.3304399.net:8007/app/libs/ijkplayer/0.6.0";
 
     private static final ArrayList<String> ijkplayerSoFiles = new ArrayList<String>();
 
-    static {
-        IjkMediaPlayer.loadLibrariesOnce(new IjkLibLoader() {
-                                             @Override
-                                             public void loadLibrary(String s) throws UnsatisfiedLinkError, SecurityException {
-                                                 ijkplayerSoFiles.add(s);
-                                             }
-                                         }
-        );
+    static
+    {
+        IjkMediaPlayer.loadLibrariesOnce(new IjkLibLoader()
+        {
+            @Override
+            public void loadLibrary(String libName) throws UnsatisfiedLinkError, SecurityException
+            {
+                ijkplayerSoFiles.add(libName);
+                try
+                {
+                    System.loadLibrary(libName);
+                }
+                catch (Throwable e)
+                {
+                    //ignore
+                }
+            }
+        });
     }
 
-    public IjkplayerRequest(Context context, RequestListener listener) {
+    public IjkplayerRequest(Context context, RequestListener listener)
+    {
         super(context, DEFAULT_LIB_DIR_URL, ijkplayerSoFiles.toArray(new String[ijkplayerSoFiles.size()]), listener);
     }
-
 }
