@@ -81,7 +81,7 @@ public class SoLoaderManager {
 		}
 
 		for (DownloadItem item : items) {
-			if (!loadedSo.contains(item.getDest().getAbsolutePath())) {
+			if (!loadedSo.contains(item.getDest())) {
 				return false;
 			}
 		}
