@@ -12,13 +12,13 @@ public class DownloadItem {
 
     private String url;
 
-    private File dest;
+    private String dest;
 
     private Request builder;
 
     private Map<String, String> headers = Collections.emptyMap();
 
-    public DownloadItem(String url, File dest, Request builder) {
+    public DownloadItem(String url, String dest, Request builder) {
         this.url = url;
         this.dest = dest;
         this.builder = builder;
@@ -28,7 +28,7 @@ public class DownloadItem {
         return url;
     }
 
-    public File getDest() {
+    public String getDest() {
         return dest;
     }
 
@@ -44,7 +44,7 @@ public class DownloadItem {
         this.url = url;
     }
 
-    public void setDest(File dest) {
+    public void setDest(String dest) {
         this.dest = dest;
     }
 

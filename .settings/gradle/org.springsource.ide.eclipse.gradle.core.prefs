@@ -1,0 +1,4 @@
+#org.springsource.ide.eclipse.gradle.core.preferences.GradleProjectPreferences
+#Sun Sep 11 14:50:13 CST 2016
+build.family.org.gradle.tooling.model.eclipse.HierarchicalEclipseProject=;app;jcvideoplayer_adapter;so_loader;
+org.springsource.ide.eclipse.gradle.rootprojectloc=

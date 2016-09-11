@@ -1,5 +1,8 @@
 package com.cantalou.manager.soloader;
 
+import android.os.Handler;
+import android.os.Message;
+
 import com.cantalou.android.util.FileUtil;
 import com.cantalou.android.util.Log;
 
@@ -15,47 +18,38 @@ import static com.cantalou.android.util.ReflectUtil.invoke;
  */
 public class Downloader implements Runnable {
 
-    /**
-     * 正在下载的文件url
-     */
-    private static HashSet<String> mDownloadingUrl = new HashSet<String>();
+	/**
+	 * The file is downloading
+	 */
+	private static HashSet<String> mDownloadingUrl = new HashSet<String>();
 
-    private DownloadItem mDownloadItem;
+	private DownloadItem mDownloadItem;
 
-    /**
-     * 下载监听
-     */
-    private RequestListener mListener;
+	private Handler mHandler;
 
-    /**
-     * 下载临时文件
-     */
-    private File mTemp;
+	private File mTemp;
 
-    /**
-     * @param downloadItem 下载信息
-     */
-    public Downloader(DownloadItem downloadItem, RequestListener listener) {
-        mDownloadItem = downloadItem;
-        mListener = listener;
-    }
+	public Downloader(DownloadItem downloadItem, RequestListener handler) {
+		mDownloadItem = downloadItem;
+		mHandler = handler;
+	}
 
-    @Override
+	@Override
     public void run() {
         File dest = mDownloadItem.getDest();
         if (dest.exists()) {
-            mListener.onSuccess(mDownloadItem);
+        	downloadSuccess()；
             Log.i("File :{} was downloaded", dest);
             return;
         }
+        
         String url = mDownloadItem.getUrl();
-
-        Log.d("Start download file , url:{}", url);
+        Log.d("Download file starting url:{}", url);
 
         mTemp = new File(dest.getAbsolutePath() + ".tmp");
         if (mTemp.exists()) {
             if (mDownloadingUrl.contains(url)) {
-                Log.i("File {} is downloading return", url);
+                Log.i("File {} is downloading now return", url);
                 return;
             } else {
                 Log.i("Delete tmp file :{}", mTemp);
@@ -69,11 +63,10 @@ public class Downloader implements Runnable {
             FileUtil.copyContent(fetcher.loadData(), mTemp);
             invoke(forName("android.system.Os"), "chmod", new Class<?>[]{}, mTemp.getAbsolutePath(), 00755);
             mTemp.renameTo(dest);
-            mListener.onSuccess(mDownloadItem);
+            downloadSuccess();
             Log.d("File url:{} download success, size:{}", url, dest.length());
         } catch (Exception e) {
-            mListener.onError(mDownloadItem, e);
-            Log.e(e);
+        	downloadError(e);
         } finally {
             mTemp.delete();
             mDownloadingUrl.remove(url);
@@ -81,5 +74,18 @@ public class Downloader implements Runnable {
                 fetcher.cleanup();
             }
         }
+    }
+
+	private void downloadSuccess(){
+    	Message msg = Message.obtain();
+    	msg.what = SoLoaderManager.DOWNLOAD_SUCCESS;
+        mHandler.sendMessage(mag)
+    }
+
+	private void downloadError(Object reason){
+    	Message msg = Message.obtain();
+    	msg.what = SoLoaderManager.DOWNLOAD_ERROR;
+    	msg.obj = readson;
+        mHandler.sendMessage(mag)
     }
 }

@@ -8,7 +8,7 @@ import com.cantalou.manager.jcvideoplayer.JCVideoPlayerAdapter;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     JCVideoPlayerAdapter jcVideoPlayerStandard;
 
