@@ -21,5 +21,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     provided 'fm.jiecao:jiecaovideoplayer:4.6.3'
+    //compile project(':jcvideoplayer-lib')
     compile project(':so_loader')
 }

@@ -29,7 +29,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.cantalou:android-util:1.0.2'
-    provided 'tv.danmaku.ijk.media:ijkplayer-java:0.6.0'
 }
 
 apply from : 'bintray.gradle'

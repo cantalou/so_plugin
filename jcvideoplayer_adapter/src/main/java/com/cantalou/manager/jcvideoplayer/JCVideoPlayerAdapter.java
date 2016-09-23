@@ -22,12 +22,13 @@ import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 public class JCVideoPlayerAdapter extends JCVideoPlayerStandard implements RequestListener,
                                                                            AbsListView.RecyclerListener
 {
-
     private IjkplayerRequest request;
 
-    private static boolean soFileUnLoaded = true;
-
     private TextView tv;
+
+    private static int playCount = 0;
+
+    private static SoLoaderManager soLoaderManager = SoLoaderManager.getInstance();
 
     public JCVideoPlayerAdapter(Context context)
     {
@@ -57,7 +58,6 @@ public class JCVideoPlayerAdapter extends JCVideoPlayerStandard implements Reque
     @Override
     public void preLoad()
     {
-
     }
 
     @Override
@@ -80,10 +80,10 @@ public class JCVideoPlayerAdapter extends JCVideoPlayerStandard implements Reque
             @Override
             public void run()
             {
+                playCount++;
                 JCVideoPlayerAdapter.super.prepareVideo();
-                soFileUnLoaded = false;
                 tv.setVisibility(View.GONE);
-                loadingProgressBar.setVisibility(View.GONE);
+                //loadingProgressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -98,34 +98,41 @@ public class JCVideoPlayerAdapter extends JCVideoPlayerStandard implements Reque
         startButton.setVisibility(View.GONE);
     }
 
-    public static void releaseAll(Context context)
-    {
-        if (context == null || soFileUnLoaded || !SoLoaderManager.getInstance()
-                                                                 .isAllLoaded(new IjkplayerRequest(context, null)))
-        {
-            return;
-        }
-    }
-
     public void releaseAllVideo()
     {
-        if (soFileUnLoaded || !SoLoaderManager.getInstance()
-                                              .isAllLoaded(new IjkplayerRequest(getContext(), null)))
+        if (playCount == 0 || !soLoaderManager.isAllLoaded(request))
         {
             return;
         }
-        super.releaseAllVideos();
+        releaseAllVideos();
         cancelProgressTimer();
+    }
+
+    @Override
+    protected void onDetachedFromWindow()
+    {
+        super.onDetachedFromWindow();
+        cancelProgressTimer();
+        releaseResource();
     }
 
     @Override
     public void onMovedToScrapHeap(View view)
     {
+        releaseResource();
+    }
+
+    private void releaseResource()
+    {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH)
         {
             return;
         }
+        request.setRequestListener(null);
         surface.release();
-
+        if (playCount > 0 && --playCount == 0)
+        {
+            releaseAllVideo();
+        }
     }
 }

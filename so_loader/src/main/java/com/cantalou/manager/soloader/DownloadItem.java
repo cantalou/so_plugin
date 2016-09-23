@@ -1,6 +1,5 @@
 package com.cantalou.manager.soloader;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
@@ -17,6 +16,8 @@ public class DownloadItem {
     private Request builder;
 
     private Map<String, String> headers = Collections.emptyMap();
+
+    private HttpUrlFetcher fetcher;
 
     public DownloadItem(String url, String dest, Request builder) {
         this.url = url;
@@ -40,21 +41,17 @@ public class DownloadItem {
         return builder;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public void setDest(String dest) {
-        this.dest = dest;
-    }
-
-    public void setBuilder(Request builder) {
-        this.builder = builder;
-    }
-
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
     }
 
+    public void setFetcher(HttpUrlFetcher fetcher)
+    {
+        this.fetcher = fetcher;
+    }
 
+    public HttpUrlFetcher getFetcher()
+    {
+        return fetcher;
+    }
 }
