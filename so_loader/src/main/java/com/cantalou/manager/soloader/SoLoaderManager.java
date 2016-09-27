@@ -126,6 +126,10 @@ public class SoLoaderManager
      */
     public boolean isAllLoaded(Request builder)
     {
+        if (builder == null)
+        {
+            return false;
+        }
         List<DownloadItem> items = builder.getDownloadItems();
         if (items.isEmpty())
         {
@@ -151,6 +155,10 @@ public class SoLoaderManager
      */
     public boolean isAllDownloaded(Request builder)
     {
+        if (builder == null)
+        {
+            return false;
+        }
         for (DownloadItem item : builder.getDownloadItems())
         {
             String path = item.getDest();
@@ -173,6 +181,11 @@ public class SoLoaderManager
      */
     public void download(Request builder)
     {
+        if (builder == null)
+        {
+            Log.w("param builder can not be null");
+            return;
+        }
         RequestListener listener = builder.getRequestListener();
         Platform def = builder.getDefaultPlatform();
         for (String abi : supportedAbis)

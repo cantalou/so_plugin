@@ -93,7 +93,8 @@ bintray {
     key = BINTRAY_KEY
 
     publications = ['MyPublication']
-    publish = true //[Default: false] Whether version should be auto published after an upload
+    override = true
+    publish = true
     pkg {
         repo = 'maven'
         userOrg = user
