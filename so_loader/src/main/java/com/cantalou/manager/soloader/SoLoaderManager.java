@@ -1,5 +1,6 @@
 package com.cantalou.manager.soloader;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -22,29 +23,25 @@ import java.util.concurrent.Executors;
  * @author cantalou
  * @date 2016年08月29日 13:58
  */
-public class SoLoaderManager
-{
+public class SoLoaderManager {
 
     public static final int DOWNLOAD_SUCCESS = 0;
 
     public static final int DOWNLOAD_ERROR = 1;
 
-    public static final ArrayList<String> DEFAULT_SERVER_SUPPORTED_ABI = new ArrayList<String>()
-    {{
-            add("arm64-v8a");
-            add("armeabi-v7a");
-            add("armeabi");
-            add("x86_64");
-            add("x86");
-        }};
+    public static final ArrayList<String> DEFAULT_SERVER_SUPPORTED_ABI = new ArrayList<String>() {{
+        add("arm64-v8a");
+        add("armeabi-v7a");
+        add("armeabi");
+        add("x86_64");
+        add("x86");
+    }};
 
-    private static class Holder
-    {
+    private static class Holder {
         static final SoLoaderManager INSTANCE = new SoLoaderManager();
     }
 
-    public static SoLoaderManager getInstance()
-    {
+    public static SoLoaderManager getInstance() {
         return Holder.INSTANCE;
     }
 
@@ -60,58 +57,45 @@ public class SoLoaderManager
 
     private Handler handler;
 
-    private class MessageHandler extends Handler
-    {
-        public MessageHandler(Looper looper)
-        {
+    private class MessageHandler extends Handler {
+        public MessageHandler(Looper looper) {
             super(looper);
         }
 
         @Override
-        public void dispatchMessage(Message msg)
-        {
-            switch (msg.what)
-            {
-                case DOWNLOAD_SUCCESS:
-                {
+        public void dispatchMessage(Message msg) {
+            switch (msg.what) {
+                case DOWNLOAD_SUCCESS: {
                     handleDownloadSuccess((DownloadItem) msg.obj);
                     break;
                 }
-                case DOWNLOAD_ERROR:
-                {
+                case DOWNLOAD_ERROR: {
                     break;
                 }
             }
         }
     }
 
-    private SoLoaderManager()
-    {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-        {
+    private SoLoaderManager() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             supportedAbis = Build.SUPPORTED_ABIS;
         }
 
-        if (supportedAbis == null || supportedAbis.length == 0)
-        {
+        if (supportedAbis == null || supportedAbis.length == 0) {
             supportedAbis = new String[]{Build.CPU_ABI, Build.CPU_ABI2};
         }
-        for (String abi : supportedAbis)
-        {
-            if (abi.contains("64"))
-            {
+        for (String abi : supportedAbis) {
+            if (abi.contains("64")) {
                 continue;
             }
-            if (!DEFAULT_SERVER_SUPPORTED_ABI.contains(abi))
-            {
+            if (!DEFAULT_SERVER_SUPPORTED_ABI.contains(abi)) {
                 continue;
             }
             matchAbi = abi;
             break;
         }
 
-        if (matchAbi != null)
-        {
+        if (matchAbi != null) {
             HandlerThread thread = new HandlerThread("soLoadThread");
             thread.start();
             handler = new MessageHandler(thread.getLooper());
@@ -124,23 +108,18 @@ public class SoLoaderManager
      * @param builder
      * @return true if all loaded
      */
-    public boolean isAllLoaded(Request builder)
-    {
-        if (builder == null)
-        {
+    public boolean isAllLoaded(Request builder) {
+        if (builder == null) {
             return false;
         }
         List<DownloadItem> items = builder.getDownloadItems();
-        if (items.isEmpty())
-        {
+        if (items.isEmpty()) {
             items = createDownloadItem(builder);
             builder.setDownloadItems(items);
         }
 
-        for (DownloadItem item : items)
-        {
-            if (!loadedSo.contains(item.getDest()))
-            {
+        for (DownloadItem item : items) {
+            if (!loadedSo.contains(item.getDest())) {
                 return false;
             }
         }
@@ -153,21 +132,16 @@ public class SoLoaderManager
      * @param builder
      * @return true if all downloaded
      */
-    public boolean isAllDownloaded(Request builder)
-    {
-        if (builder == null)
-        {
+    public boolean isAllDownloaded(Request builder) {
+        if (builder == null) {
             return false;
         }
-        for (DownloadItem item : builder.getDownloadItems())
-        {
+        for (DownloadItem item : builder.getDownloadItems()) {
             String path = item.getDest();
-            if (loadedSo.contains(path) || downloadedSo.containsKey(path))
-            {
+            if (loadedSo.contains(path) || downloadedSo.containsKey(path)) {
                 continue;
             }
-            if (new File(path).exists())
-            {
+            if (new File(path).exists()) {
                 downloadedSo.put(path, path);
                 continue;
             }
@@ -177,50 +151,61 @@ public class SoLoaderManager
     }
 
     /**
-     * @param builder
+     * @param request
      */
-    public void download(Request builder)
-    {
-        if (builder == null)
-        {
+    public void download(Request request) {
+        if (request == null) {
             Log.w("param builder can not be null");
             return;
         }
-        RequestListener listener = builder.getRequestListener();
-        Platform def = builder.getDefaultPlatform();
-        for (String abi : supportedAbis)
-        {
-            if (abi.equals(def.name))
-            {
+        RequestListener listener = request.getRequestListener();
+        Platform def = request.getDefaultPlatform();
+        for (String abi : supportedAbis) {
+            if (abi.equals(def.name)) {
                 Log.i("So file had bind in apk");
                 listener.afterLoaded();
                 return;
             }
         }
 
-        if (StringUtils.isBlank(matchAbi))
-        {
+        if (StringUtils.isBlank(matchAbi)) {
             Log.w("Not supported cpu abi");
             return;
         }
 
         listener.preLoad();
 
-        List<DownloadItem> items = builder.getDownloadItems();
-        if (items.isEmpty())
-        {
-            items = createDownloadItem(builder);
-            builder.setDownloadItems(items);
+        List<DownloadItem> items = request.getDownloadItems();
+        if (items.isEmpty()) {
+            items = createDownloadItem(request);
+            request.setDownloadItems(items);
         }
 
-        if (isAllLoaded(builder))
-        {
+        //upgrade version if need
+        int newVersion = request.getVersion();
+        SharedPreferences sp = request.getPreference();
+        for (DownloadItem item : items) {
+            int version = sp.getInt(item.getDest(), 0);
+            if (newVersion > version) {
+                try {
+                    for (File file : new File[]{new File(item.getDest()), new File(item.getCacheDest())}) {
+                        if (file.exists()) {
+                            file.delete();
+                        }
+                    }
+                    sp.edit().putInt(item.getDest(), newVersion).commit();
+                } catch (Exception e) {
+                    listener.onError(item, e);
+                }
+            }
+        }
+
+        if (isAllLoaded(request)) {
             listener.afterLoaded();
             return;
         }
 
-        for (DownloadItem item : items)
-        {
+        for (DownloadItem item : items) {
             es.execute(new Downloader(item, handler));
         }
     }
@@ -233,45 +218,59 @@ public class SoLoaderManager
      * @param builder
      * @return
      */
-    private List<DownloadItem> createDownloadItem(Request builder)
-    {
+    private List<DownloadItem> createDownloadItem(Request builder) {
+
         String[] soFiles = builder.getSoFiles();
-        if (soFiles == null || soFiles.length == 0)
-        {
+        if (soFiles == null || soFiles.length == 0) {
             return Collections.emptyList();
         }
+
         ArrayList<DownloadItem> items = new ArrayList<DownloadItem>(soFiles.length);
         StringBuilder sb = new StringBuilder();
-        File destDir = new File(builder.getContext()
-                                       .getFilesDir() + "/libs/" + matchAbi);
+
+        File destDir = new File(builder.getDestDir() + "/libs/" + matchAbi);
         destDir.mkdirs();
-        for (int i = 0; i < builder.getSoFiles().length; i++)
-        {
+
+        File cacheFileDir = new File(builder.getCacheDir(), "/.libs/" + matchAbi);
+        if (cacheFileDir != null) {
+            cacheFileDir.mkdirs();
+        }
+
+        String dest = null;
+        String cacheDest = null;
+        for (int i = 0; i < builder.getSoFiles().length; i++) {
 
             sb.setLength(0);
             String fileName = sb.append("lib")
-                                .append(soFiles[i])
-                                .append(".so")
-                                .toString();
+                    .append(soFiles[i])
+                    .append(".so")
+                    .toString();
 
             sb.setLength(0);
-            String dest = sb.append(destDir)
-                            .append('/')
-                            .append(fileName)
-                            .toString();
-            if (loadedSo.contains(dest))
-            {
+            dest = sb.append(destDir)
+                    .append('/')
+                    .append(fileName)
+                    .toString();
+            if (loadedSo.contains(dest)) {
                 continue;
+            }
+
+            if (cacheFileDir != null) {
+                sb.setLength(0);
+                cacheDest = sb.append(cacheFileDir)
+                        .append('/')
+                        .append(fileName)
+                        .toString();
             }
 
             sb.setLength(0);
             String url = sb.append(builder.getLibDirUrl())
-                           .append('/')
-                           .append(matchAbi)
-                           .append('/')
-                           .append(fileName)
-                           .toString();
-            items.add(new DownloadItem(url, dest, builder));
+                    .append('/')
+                    .append(matchAbi)
+                    .append('/')
+                    .append(fileName)
+                    .toString();
+            items.add(new DownloadItem(url, dest, cacheDest, builder));
         }
         return items;
     }
@@ -281,34 +280,26 @@ public class SoLoaderManager
      *
      * @param item
      */
-    public void handleDownloadSuccess(DownloadItem item)
-    {
+    public void handleDownloadSuccess(DownloadItem item) {
         Request rb = item.getBuilder();
         RequestListener listener = rb.getRequestListener();
-        if (!isAllDownloaded(rb))
-        {
+        if (!isAllDownloaded(rb)) {
             return;
         }
 
-        try
-        {
-            for (DownloadItem di : rb.getDownloadItems())
-            {
+        try {
+            for (DownloadItem di : rb.getDownloadItems()) {
                 String path = di.getDest();
-                if (loadedSo.contains(path))
-                {
+                if (loadedSo.contains(path)) {
                     continue;
                 }
                 System.load(path);
                 loadedSo.add(path);
             }
-            if (listener != null)
-            {
+            if (listener != null) {
                 listener.afterLoaded();
             }
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             // item.getDest().delete();
             Log.w(e, "Loading lib error");
         }

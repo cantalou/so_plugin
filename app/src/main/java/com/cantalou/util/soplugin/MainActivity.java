@@ -1,7 +1,7 @@
 package com.cantalou.util.soplugin;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import com.cantalou.manager.jcvideoplayer.JCVideoPlayerAdapter;
 
@@ -35,6 +35,5 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        jcVideoPlayerStandard.releaseVideos();
     }
 }

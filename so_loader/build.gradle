@@ -28,7 +28,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.cantalou:android-util:1.0.2'
+    compile 'com.cantalou:android-util:1.0.3'
 }
 
 apply from : 'bintray.gradle'

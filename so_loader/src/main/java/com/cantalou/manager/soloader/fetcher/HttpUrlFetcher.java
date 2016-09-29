@@ -1,4 +1,4 @@
-package com.cantalou.manager.soloader;
+package com.cantalou.manager.soloader.fetcher;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,7 +17,7 @@ import java.util.Map;
  * @author cantalou
  * @date 2016年08月30日 11:45
  */
-public class HttpUrlFetcher
+public class HttpUrlFetcher implements Fetcher
 {
 
     private static final String TAG = "HttpUrlFetcher";
